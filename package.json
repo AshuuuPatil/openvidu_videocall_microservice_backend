@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "openvidu-node-client": "^2.32.1"
+  }
+}
