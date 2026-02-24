@@ -1,56 +1,99 @@
+# import requests
+# from app.config import settings
+
+# class OpenViduService:
+#     @staticmethod
+#     def create_session(custom_session_id: str = None):
+#         url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions"
+
+#         payload = {}
+#         if custom_session_id:
+#             payload["customSessionId"] = custom_session_id
+
+#         response = requests.post(
+#             url,
+#             json=payload,
+#             auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
+#             verify=False
+#         )
+
+#         if response.status_code not in [200, 201]:
+#             raise Exception(f"Failed to create session: {response.text}")
+
+#         return response.json()
+
+#     @staticmethod
+#     def create_connection(session_id: str):
+#         url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions/{session_id}/connection"
+
+#         response = requests.post(
+#             url,
+#             json={},
+#             auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
+#             verify=False
+#         )
+
+#         if response.status_code not in [200, 201]:
+#             raise Exception(f"Failed to create connection: {response.text}")
+
+#         return response.json()
+    
+#     @staticmethod
+#     def create_session(custom_session_id: str = None):
+#         url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions"
+#         payload = {}
+#         if custom_session_id:
+#             payload["customSessionId"] = custom_session_id
+#         response = requests.post(
+#             url,
+#             json=payload,
+#             auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
+#             verify=False
+#         )
+#         # 409 means session already exists — that's OK
+#         if response.status_code not in [200, 201, 409]:
+#             raise Exception(f"Failed to create session: {response.text}")
+#         return response.json() if response.status_code != 409 else {"customSessionId": custom_session_id}
+
+
+
+
+
+
 import requests
 from app.config import settings
 
 class OpenViduService:
+
     @staticmethod
     def create_session(custom_session_id: str = None):
         url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions"
-
         payload = {}
         if custom_session_id:
             payload["customSessionId"] = custom_session_id
-
         response = requests.post(
             url,
             json=payload,
             auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
             verify=False
         )
-
-        if response.status_code not in [200, 201]:
+        if response.status_code in [200, 201]:
+            return response.json()
+        elif response.status_code == 409:
+            # Session already exists — return the session ID directly
+            return {"id": custom_session_id}
+        else:
             raise Exception(f"Failed to create session: {response.text}")
-
-        return response.json()
 
     @staticmethod
     def create_connection(session_id: str):
         url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions/{session_id}/connection"
-
         response = requests.post(
             url,
             json={},
             auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
             verify=False
         )
-
         if response.status_code not in [200, 201]:
             raise Exception(f"Failed to create connection: {response.text}")
-
         return response.json()
-    
-    @staticmethod
-    def create_session(custom_session_id: str = None):
-        url = f"{settings.OPENVIDU_URL}/openvidu/api/sessions"
-        payload = {}
-        if custom_session_id:
-            payload["customSessionId"] = custom_session_id
-        response = requests.post(
-            url,
-            json=payload,
-            auth=(settings.OPENVIDU_USERNAME, settings.OPENVIDU_SECRET),
-            verify=False
-        )
-        # 409 means session already exists — that's OK
-        if response.status_code not in [200, 201, 409]:
-            raise Exception(f"Failed to create session: {response.text}")
-        return response.json() if response.status_code != 409 else {"customSessionId": custom_session_id}
