@@ -54,7 +54,7 @@ class OpenViduService:
         if response.status_code not in [200, 201]:
             raise Exception(f"Failed to start recording: {response.text}")
         return response.json()
-
+    
     @staticmethod
     def stop_recording(recording_id: str):
         url = f"{settings.OPENVIDU_URL}/openvidu/api/recordings/stop/{recording_id}"
@@ -66,7 +66,26 @@ class OpenViduService:
         )
         if response.status_code not in [200, 201]:
             raise Exception(f"Failed to stop recording: {response.text}")
-        return response.json()
+        
+        recording = response.json()
+        
+        # Auto-copy recording to /home/ubuntu/test-1/record_videos/
+        try:
+            import shutil, os
+            src = f"/opt/openvidu/recordings/{recording_id}/{recording_id}.mp4"
+            dest_dir = "/home/ubuntu/test-1/record_videos"
+            os.makedirs(dest_dir, exist_ok=True)
+            dest = os.path.join(dest_dir, f"{recording_id}.mp4")
+            if os.path.exists(src):
+                shutil.copy2(src, dest)
+                print(f"Recording saved to {dest}")
+            else:
+                print(f"Recording file not found at {src}")
+        except Exception as e:
+            print(f"Warning: Could not copy recording: {e}")
+        
+        return recording
+
 
     @staticmethod
     def get_recording(recording_id: str):
