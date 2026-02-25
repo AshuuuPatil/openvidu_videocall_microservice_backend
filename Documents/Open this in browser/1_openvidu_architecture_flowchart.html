@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenVidu Architecture Flowchart</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Syne', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 48px;
+    letter-spacing: 0.1em;
+  }
+
+  .chart {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .phase-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  /* Node styles */
+  .node {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    position: relative;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .node:hover {
+    box-shadow: 0 0 24px rgba(0,212,255,0.15);
+    border-color: var(--accent);
+  }
+
+  .node-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .node-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Color themes per phase */
+  .phase-aws .phase-label   { background: rgba(245,158,11,0.15); color: var(--accent4); border: 1px solid rgba(245,158,11,0.3); }
+  .phase-aws .node          { border-left: 3px solid var(--accent4); }
+  .phase-aws .node-title    { color: var(--accent4); }
+
+  .phase-infra .phase-label { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+  .phase-infra .node        { border-left: 3px solid var(--accent); }
+  .phase-infra .node-title  { color: var(--accent); }
+
+  .phase-ssl .phase-label   { background: rgba(124,58,237,0.15); color: var(--accent2); border: 1px solid rgba(124,58,237,0.3); }
+  .phase-ssl .node          { border-left: 3px solid var(--accent2); }
+  .phase-ssl .node-title    { color: var(--accent2); }
+
+  .phase-backend .phase-label { background: rgba(16,185,129,0.12); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
+  .phase-backend .node        { border-left: 3px solid var(--accent3); }
+  .phase-backend .node-title  { color: var(--accent3); }
+
+  .phase-frontend .phase-label { background: rgba(0,212,255,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+  .phase-frontend .node        { border-left: 3px solid #60a5fa; }
+  .phase-frontend .node-title  { color: #60a5fa; }
+
+  .phase-features .phase-label { background: rgba(239,68,68,0.1); color: var(--accent5); border: 1px solid rgba(239,68,68,0.3); }
+  .phase-features .node        { border-left: 3px solid var(--accent5); }
+  .phase-features .node-title  { color: var(--accent5); }
+
+  .phase-deploy .phase-label { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .phase-deploy .node        { border-left: 3px solid #34d399; }
+  .phase-deploy .node-title  { color: #34d399; }
+
+  /* Arrow */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    position: relative;
+  }
+  .arrow::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 50%;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border), var(--accent));
+    transform: translateX(-50%);
+  }
+  .arrow-head {
+    width: 10px; height: 10px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(45deg);
+    margin-top: 6px;
+    box-shadow: 2px 2px 6px rgba(0,212,255,0.4);
+  }
+
+  /* Grid for branches */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  .branch-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .decision {
+    background: var(--surface);
+    border: 1.5px dashed var(--accent2);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .decision .node-title { color: var(--accent2); font-size: 0.9rem; }
+
+  /* Final status */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .status-item {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: #34d399;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; flex-shrink: 0; }
+
+  .step-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* animate in */
+  .phase { animation: fadeUp 0.4s ease both; }
+  .phase:nth-child(1)  { animation-delay: 0.05s }
+  .phase:nth-child(2)  { animation-delay: 0.10s }
+  .phase:nth-child(3)  { animation-delay: 0.15s }
+  .phase:nth-child(4)  { animation-delay: 0.20s }
+  .phase:nth-child(5)  { animation-delay: 0.25s }
+  .phase:nth-child(6)  { animation-delay: 0.30s }
+  .phase:nth-child(7)  { animation-delay: 0.35s }
+  .phase:nth-child(8)  { animation-delay: 0.40s }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<h1>OpenVidu Architecture Flowchart</h1>
+<p class="subtitle">// FROM CLOUDFORMATION SETUP → FULL DEPLOYMENT //</p>
+
+<div class="chart">
+
+  <!-- PHASE 1: AWS CloudFormation -->
+  <div class="phase phase-aws">
+    <div class="phase-label">Phase 1 — AWS CloudFormation</div>
+    <div class="node">
+      <div class="step-badge">STEP 01</div>
+      <div class="node-title">Access AWS CloudFormation Console</div>
+      <div class="node-desc">Navigate to AWS Console → CloudFormation → Create Stack → With new resources</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="node">
+      <div class="step-badge">STEP 02</div>
+      <div class="node-title">Specify CloudFormation Template</div>
+      <div class="node-desc">Amazon S3 URL: CF-OpenVidu-2.32.0.yaml — defines EC2, IAM roles, networking, OpenVidu AMI</div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 2: Stack Parameters -->
+  <div class="phase phase-infra">
+    <div class="phase-label">Phase 2 — Stack Parameters</div>
+    <div class="grid2">
+      <div>
+        <div class="branch-label">EC2 CONFIG</div>
+        <div class="node">
+          <div class="node-title">EC2 Instance Setup</div>
+          <div class="node-desc">Choose instance type (t2.medium+), SSH key pair, region. CloudFormation copies OpenVidu AMI to your account.</div>
+        </div>
+      </div>
+      <div>
+        <div class="branch-label">OPENVIDU CONFIG</div>
+        <div class="node">
+          <div class="node-title">OpenVidu Secret & Options</div>
+          <div class="node-desc">Set OPENVIDU_SECRET (alphanumeric), choose to deploy OpenVidu Call app, optionally share telemetry.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 3: SSL/Domain -->
+  <div class="phase phase-ssl">
+    <div class="phase-label">Phase 3 — Domain & SSL Configuration</div>
+    <div class="decision">
+      <div class="node-title">SSL Certificate Type?</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid3">
+      <div class="node">
+        <div class="node-title">Self-Signed</div>
+        <div class="node-desc">Dev/testing only. No EIP or domain needed. Browser security warning expected.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Let's Encrypt</div>
+        <div class="node-desc">Create Elastic IP → Point FQDN → Provide email. Auto-generates free valid cert.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Custom / Commercial CA</div>
+        <div class="node-desc">Generate CSR + private key via openssl, upload .crt & .key to HTTP URL, provide both URLs.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 4: Stack Creation -->
+  <div class="phase phase-infra">
+    <div class="phase-label">Phase 4 — Stack Creation & EC2 Launch</div>
+    <div class="node">
+      <div class="step-badge">STEP 03</div>
+      <div class="node-title">CloudFormation Deploys Stack</div>
+      <div class="node-desc">Status: CREATE_IN_PROGRESS → ~2 min wait → CREATE_COMPLETE. EC2 instance launches with OpenVidu pre-installed at /opt/openvidu. Lambda copies AMI to your account.</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid2">
+      <div class="node">
+        <div class="node-title">DuckDNS Dynamic DNS</div>
+        <div class="node-desc">Register chourangi.duckdns.org → point to EC2 public IP. Auto-renew IP mapping via cron.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Nginx Reverse Proxy</div>
+        <div class="node-desc">Port 443 → Frontend (3000) and Backend (8000). Handles HTTPS termination and CORS.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 5: Backend -->
+  <div class="phase phase-backend">
+    <div class="phase-label">Phase 5 — FastAPI Backend</div>
+    <div class="node">
+      <div class="step-badge">REPO: openvidu-fastapi-poc</div>
+      <div class="node-title">FastAPI Python Backend</div>
+      <div class="node-desc">Deployed at /home/ubuntu/test-1/backend — runs on port 8000 via uvicorn</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid3">
+      <div class="node">
+        <div class="node-title">Session API</div>
+        <div class="node-desc">POST /create-session — creates OpenVidu session with sessionId</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Token API</div>
+        <div class="node-desc">POST /create-token — generates connection token for participant to join</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Recording API</div>
+        <div class="node-desc">POST /start-recording, /stop-recording, GET /download-recording/:id</div>
+      </div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="node">
+      <div class="node-title">OpenVidu Service (openvidu_service.py)</div>
+      <div class="node-desc">Wraps OpenVidu REST API. On stop-recording: auto-copies MP4 from /opt/openvidu/recordings/ → /home/ubuntu/test-1/record_videos/</div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 6: Frontend -->
+  <div class="phase phase-frontend">
+    <div class="phase-label">Phase 6 — React Frontend</div>
+    <div class="node">
+      <div class="step-badge">REPO: openvidu-frontend-poc</div>
+      <div class="node-title">React + OpenVidu Browser SDK</div>
+      <div class="node-desc">Deployed at /home/ubuntu/test-1/frontend — built with npm run build, served on port 3000 via serve or Nginx</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid3">
+      <div class="node">
+        <div class="node-title">Lobby / Join</div>
+        <div class="node-desc">Enter calling ID → calls backend to create session + token → joins OV session</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Video Call Room</div>
+        <div class="node-desc">Publisher + Subscriber streams. Camera / Mic toggle. Screen share controls.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Chat + Recording UI</div>
+        <div class="node-desc">Real-time chat via OV signals. 🔴 Record / ⏹ Stop / ⬇ Download buttons.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 7: Features -->
+  <div class="phase phase-features">
+    <div class="phase-label">Phase 7 — Feature Implementation</div>
+    <div class="grid2">
+      <div class="node">
+        <div class="node-title">Video Calling</div>
+        <div class="node-desc">OpenVidu CE handles WebRTC via Kurento Media Server. Multi-participant support. Camera/mic toggle. Session management by calling ID.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Real-Time Chat</div>
+        <div class="node-desc">OpenVidu signal API for text messages. Message history per session. Sender + timestamp displayed.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Recording</div>
+        <div class="node-desc">Backend triggers OV recording. MP4 stored at /opt/openvidu/recordings/. Auto-copied to /record_videos/. Download endpoint serves file.</div>
+      </div>
+      <div class="node">
+        <div class="node-title">Screen Share</div>
+        <div class="node-desc">Browser getDisplayMedia API. Published as separate OV stream. Toggle on/off during call.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="arrow-head"></div></div>
+
+  <!-- PHASE 8: CI/CD & Deploy -->
+  <div class="phase phase-deploy">
+    <div class="phase-label">Phase 8 — CI/CD & Deployment Workflow</div>
+    <div class="node">
+      <div class="node-title">GitHub → EC2 Deployment Pipeline</div>
+      <div class="node-desc">Local changes → git push origin master → SSH into EC2 → git pull → restart services</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid2">
+      <div class="node">
+        <div class="node-title">Backend Deploy</div>
+        <div class="node-desc">
+          git reset --hard origin/master<br>
+          pkill uvicorn → nohup uvicorn app.main:app<br>
+          Health check: GET /health → {"status":"ok"}
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-title">Frontend Deploy</div>
+        <div class="node-desc">
+          git pull → npm install → npm run build<br>
+          Nginx serves /dist or serve -s build<br>
+          Accessible via https://chourangi.duckdns.org
+        </div>
+      </div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="node">
+      <div class="node-title">✅ Production Deployment — Final State</div>
+      <div class="node-desc" style="margin-bottom:12px">All services live at https://chourangi.duckdns.org</div>
+      <div class="status-grid">
+        <div class="status-item"><div class="dot"></div>Video Calling</div>
+        <div class="status-item"><div class="dot"></div>Real-time Chat</div>
+        <div class="status-item"><div class="dot"></div>Recording Start/Stop</div>
+        <div class="status-item"><div class="dot"></div>Auto Save to Server</div>
+        <div class="status-item"><div class="dot"></div>Download Recording</div>
+        <div class="status-item"><div class="dot"></div>Screen Share</div>
+        <div class="status-item"><div class="dot"></div>HTTPS / SSL Active</div>
+        <div class="status-item"><div class="dot"></div>GitHub CI/CD Ready</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .chart -->
+
+</body>
+</html>

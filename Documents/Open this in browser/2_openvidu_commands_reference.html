@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenVidu Commands Reference Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2130;
+    --border: #21262d;
+    --text: #c9d1d9;
+    --muted: #6e7681;
+    --heading: #f0f6fc;
+
+    --cat-aws:        #f59e0b;
+    --cat-openvidu:   #a78bfa;
+    --cat-backend:    #34d399;
+    --cat-frontend:   #60a5fa;
+    --cat-deploy:     #f472b6;
+    --cat-github:     #fb923c;
+    --cat-nginx:      #22d3ee;
+    --cat-debug:      #fbbf24;
+    --cat-ssl:        #818cf8;
+    --cat-npm:        #4ade80;
+
+    --code-bg: #0d1117;
+    --code-border: #30363d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ──────── TOP HEADER ──────── */
+  .page-header {
+    background: linear-gradient(135deg, #161b22 0%, #1c2130 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 40px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header h1 {
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+  }
+  .page-header p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ──────── TOC NAV ──────── */
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .toc-btn {
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .toc-btn:hover { opacity: 0.8; }
+
+  /* ──────── MAIN CONTENT ──────── */
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  /* ──────── SECTION ──────── */
+  .section {
+    margin-bottom: 56px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--heading);
+  }
+  .section-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* ──────── COMMAND CARD ──────── */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 700px) {
+    .cmd-grid { grid-template-columns: 1fr; }
+    .content { padding: 20px 16px 60px; }
+    .toc { padding: 12px 16px; }
+    .page-header { padding: 24px 16px; }
+  }
+
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .cmd-card:hover {
+    border-color: #30363d;
+  }
+
+  .cmd-card-top {
+    padding: 14px 16px 10px;
+  }
+  .cmd-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .cmd-title {
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 5px;
+  }
+  .cmd-desc {
+    font-size: 0.84rem;
+    color: #8b949e;
+    line-height: 1.55;
+  }
+
+  .cmd-code-area {
+    background: var(--code-bg);
+    border-top: 1px solid var(--code-border);
+    padding: 12px 16px;
+    position: relative;
+  }
+  .cmd-code-area pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #e6edf3;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  /* copy button */
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .copy-btn:hover { background: #30363d; color: var(--text); }
+  .copy-btn.copied { color: #34d399; border-color: #34d399; }
+
+  /* ──────── COLOUR THEMING PER CATEGORY ──────── */
+  /* AWS */
+  .cat-aws   .cmd-label { background: rgba(245,158,11,0.15); color: var(--cat-aws); }
+  .cat-aws   .section-icon { background: rgba(245,158,11,0.12); }
+  .cat-aws   .section-title { color: var(--cat-aws); }
+
+  /* OpenVidu */
+  .cat-openvidu .cmd-label { background: rgba(167,139,250,0.12); color: var(--cat-openvidu); }
+  .cat-openvidu .section-icon { background: rgba(167,139,250,0.1); }
+  .cat-openvidu .section-title { color: var(--cat-openvidu); }
+
+  /* Backend */
+  .cat-backend .cmd-label { background: rgba(52,211,153,0.12); color: var(--cat-backend); }
+  .cat-backend .section-icon { background: rgba(52,211,153,0.1); }
+  .cat-backend .section-title { color: var(--cat-backend); }
+
+  /* Frontend / NPM */
+  .cat-npm .cmd-label { background: rgba(74,222,128,0.1); color: var(--cat-npm); }
+  .cat-npm .section-icon { background: rgba(74,222,128,0.08); }
+  .cat-npm .section-title { color: var(--cat-npm); }
+
+  /* Frontend */
+  .cat-frontend .cmd-label { background: rgba(96,165,250,0.1); color: var(--cat-frontend); }
+  .cat-frontend .section-icon { background: rgba(96,165,250,0.08); }
+  .cat-frontend .section-title { color: var(--cat-frontend); }
+
+  /* Deploy */
+  .cat-deploy .cmd-label { background: rgba(244,114,182,0.1); color: var(--cat-deploy); }
+  .cat-deploy .section-icon { background: rgba(244,114,182,0.08); }
+  .cat-deploy .section-title { color: var(--cat-deploy); }
+
+  /* GitHub */
+  .cat-github .cmd-label { background: rgba(251,146,60,0.12); color: var(--cat-github); }
+  .cat-github .section-icon { background: rgba(251,146,60,0.1); }
+  .cat-github .section-title { color: var(--cat-github); }
+
+  /* Nginx */
+  .cat-nginx .cmd-label { background: rgba(34,211,238,0.1); color: var(--cat-nginx); }
+  .cat-nginx .section-icon { background: rgba(34,211,238,0.08); }
+  .cat-nginx .section-title { color: var(--cat-nginx); }
+
+  /* Debug */
+  .cat-debug .cmd-label { background: rgba(251,191,36,0.1); color: var(--cat-debug); }
+  .cat-debug .section-icon { background: rgba(251,191,36,0.08); }
+  .cat-debug .section-title { color: var(--cat-debug); }
+
+  /* SSL */
+  .cat-ssl .cmd-label { background: rgba(129,140,248,0.12); color: var(--cat-ssl); }
+  .cat-ssl .section-icon { background: rgba(129,140,248,0.1); }
+  .cat-ssl .section-title { color: var(--cat-ssl); }
+
+  /* ──────── NOTE BOXES ──────── */
+  .note {
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.83rem;
+    color: #93c5fd;
+    margin-bottom: 16px;
+  }
+  .note strong { color: #60a5fa; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>⚡ OpenVidu Full Project — Commands Reference Guide</h1>
+  <p>// All commands from project setup to production deployment — categorized &amp; described //</p>
+</div>
+
+<nav class="toc">
+  <a class="toc-btn" href="#sec-aws"      style="background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.3)">🟡 AWS / OpenVidu Setup</a>
+  <a class="toc-btn" href="#sec-openvidu" style="background:rgba(167,139,250,0.1);color:#a78bfa;border-color:rgba(167,139,250,0.3)">🟣 OpenVidu Service</a>
+  <a class="toc-btn" href="#sec-ssl"      style="background:rgba(129,140,248,0.1);color:#818cf8;border-color:rgba(129,140,248,0.3)">🔵 SSL / Domain</a>
+  <a class="toc-btn" href="#sec-backend"  style="background:rgba(52,211,153,0.1);color:#34d399;border-color:rgba(52,211,153,0.3)">🟢 Backend (FastAPI)</a>
+  <a class="toc-btn" href="#sec-npm"      style="background:rgba(74,222,128,0.1);color:#4ade80;border-color:rgba(74,222,128,0.3)">🟩 NPM / Frontend Build</a>
+  <a class="toc-btn" href="#sec-nginx"    style="background:rgba(34,211,238,0.1);color:#22d3ee;border-color:rgba(34,211,238,0.3)">🩵 Nginx Config</a>
+  <a class="toc-btn" href="#sec-deploy"   style="background:rgba(244,114,182,0.1);color:#f472b6;border-color:rgba(244,114,182,0.3)">🩷 EC2 Deployment</a>
+  <a class="toc-btn" href="#sec-github"   style="background:rgba(251,146,60,0.1);color:#fb923c;border-color:rgba(251,146,60,0.3)">🟠 GitHub Push/Pull</a>
+  <a class="toc-btn" href="#sec-debug"    style="background:rgba(251,191,36,0.1);color:#fbbf24;border-color:rgba(251,191,36,0.3)">🟡 Debug &amp; Logs</a>
+</nav>
+
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 1 — AWS / OpenVidu CloudFormation Setup
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-aws" id="sec-aws">
+    <div class="section-header">
+      <div class="section-icon">☁️</div>
+      <div>
+        <div class="section-title">AWS / OpenVidu CloudFormation Setup</div>
+        <div class="section-sub">Commands and URLs used to create the OpenVidu instance on AWS</div>
+      </div>
+    </div>
+
+    <div class="note"><strong>Note:</strong> These commands are used during initial AWS CloudFormation setup. You do them once when first creating the OpenVidu server on AWS.</div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">CloudFormation URL</div>
+          <div class="cmd-title">OpenVidu Latest CloudFormation Template</div>
+          <div class="cmd-desc">This is the S3 URL you paste in AWS CloudFormation → Specify Template → Amazon S3 URL. It automatically sets up an EC2 instance with OpenVidu installed and ready to run.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>https://s3-eu-west-1.amazonaws.com/aws.openvidu.io/CF-OpenVidu-latest.yaml</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">CloudFormation URL</div>
+          <div class="cmd-title">OpenVidu Specific Version Template (2.32.0)</div>
+          <div class="cmd-desc">Use this URL if you want to deploy a fixed version of OpenVidu instead of the latest. Replace 2.32.0 with any other version number if needed.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>https://s3-eu-west-1.amazonaws.com/aws.openvidu.io/CF-OpenVidu-2.32.0.yaml</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">SSL — OpenSSL</div>
+          <div class="cmd-title">Generate CSR and Private Key for Custom Certificate</div>
+          <div class="cmd-desc">Run this command to create a certificate signing request (CSR) and a private key file. You need these two files if you want to use a commercial SSL certificate (not Let's Encrypt). The Common Name should be your domain name.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>openssl req -newkey rsa:2048 -nodes -keyout certificate.key -out certificate.csr</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 2 — OpenVidu Service Management
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-openvidu" id="sec-openvidu">
+    <div class="section-header">
+      <div class="section-icon">📡</div>
+      <div>
+        <div class="section-title">OpenVidu Service Management</div>
+        <div class="section-sub">Start, stop, restart, and check OpenVidu containers on EC2</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Start</div>
+          <div class="cmd-title">Start OpenVidu</div>
+          <div class="cmd-desc">Starts all OpenVidu Docker containers (openvidu-server, nginx, coturn, kms, app). Run this whenever you want to launch the OpenVidu server after it has been stopped.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /opt/openvidu
+./openvidu start</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Stop</div>
+          <div class="cmd-title">Stop OpenVidu</div>
+          <div class="cmd-desc">Stops all running OpenVidu Docker containers safely. Use this before making big configuration changes to .env or docker-compose.yml files so nothing is running while you edit.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /opt/openvidu
+./openvidu stop</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Restart</div>
+          <div class="cmd-title">Restart OpenVidu</div>
+          <div class="cmd-desc">Stops and starts OpenVidu again. Use this after any change to .env configuration, docker-compose.yml, or Nginx config files. Always wait 2 minutes after restart before testing.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /opt/openvidu && ./openvidu restart</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Status</div>
+          <div class="cmd-title">Check All Running Docker Containers</div>
+          <div class="cmd-desc">Shows all currently running Docker containers on EC2. You should see 5 containers: openvidu-server, openvidu-nginx-1, openvidu-coturn-1, openvidu-kms-1 (Kurento), and openvidu-app-1.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker ps</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Config</div>
+          <div class="cmd-title">Edit OpenVidu .env Configuration File</div>
+          <div class="cmd-desc">Opens the main OpenVidu configuration file for editing. This file controls domain name, SSL type, secrets, COTURN IP settings, recording paths, and other critical settings. Always restart OpenVidu after saving changes.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>nano /opt/openvidu/.env</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Config</div>
+          <div class="cmd-title">View Specific .env Values (COTURN / DOMAIN)</div>
+          <div class="cmd-desc">Quickly shows only the lines related to COTURN server, TURN, DOMAIN, and IP settings inside the .env file. Useful for quickly checking what IP and domain is configured without opening the whole file.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cat /opt/openvidu/.env | grep -E "COTURN|TURN|DOMAIN|IP"</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">OpenVidu Config</div>
+          <div class="cmd-title">Edit docker-compose.yml</div>
+          <div class="cmd-desc">Opens the Docker Compose file that controls how all OpenVidu containers are run. Used to add the --external-ip flag for COTURN, change port mappings, or disable the default OpenVidu Call app by setting WITH_APP=false.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>nano /opt/openvidu/docker-compose.yml</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Inspect</div>
+          <div class="cmd-title">Inspect COTURN Container Command</div>
+          <div class="cmd-desc">Checks the exact command arguments that the COTURN container was started with. Used to verify whether the --external-ip flag was applied after changing docker-compose.yml.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker inspect openvidu-coturn-1 | grep -A 5 "Cmd"</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Inspect</div>
+          <div class="cmd-title">Inspect Nginx Volume Mounts</div>
+          <div class="cmd-desc">Shows which folders are mounted inside the OpenVidu Nginx container. Used to confirm the correct path where the custom-layout (frontend build) folder is mounted inside Docker.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker inspect openvidu-nginx-1 | grep -A 3 "custom-layout"</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Check</div>
+          <div class="cmd-title">View docker-compose.yml COTURN Section</div>
+          <div class="cmd-desc">Shows the COTURN-related configuration inside docker-compose.yml. Used to check ports, volumes, and command flags for the COTURN TURN/STUN server container.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cat /opt/openvidu/docker-compose.yml | grep -A 20 "coturn"</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Check</div>
+          <div class="cmd-title">View docker-compose.yml Command Section</div>
+          <div class="cmd-desc">Shows only the command block inside docker-compose.yml. Used to confirm whether --external-ip and other startup flags were correctly added to the COTURN container.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cat /opt/openvidu/docker-compose.yml | grep -A 15 "command:"</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">File Check</div>
+          <div class="cmd-title">List Files in Custom Layout (Frontend Build)</div>
+          <div class="cmd-desc">Lists all files inside /opt/openvidu/custom-layout/ which is where the React build output should be copied to. You should see index.html, static folder, favicon.ico etc. after a successful frontend deploy.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>ls /opt/openvidu/custom-layout/</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 3 — SSL / Domain
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-ssl" id="sec-ssl">
+    <div class="section-header">
+      <div class="section-icon">🔒</div>
+      <div>
+        <div class="section-title">SSL Certificate &amp; Domain Setup</div>
+        <div class="section-sub">DuckDNS + Let's Encrypt SSL commands</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Host IP</div>
+          <div class="cmd-title">Get Docker Host Gateway IP</div>
+          <div class="cmd-desc">Finds the default gateway IP used by Docker containers. This is used inside Nginx config to proxy API requests to the FastAPI backend running on the EC2 host machine. Usually returns 172.17.0.1 or similar.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>ip route | grep default | awk '{print $3}'</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Server IP</div>
+          <div class="cmd-title">Get EC2 Private and Docker Bridge IPs</div>
+          <div class="cmd-desc">Shows all IP addresses assigned to the EC2 instance — including the private IP (172.31.x.x), Docker bridge IP (172.17.0.1), and custom Docker network IPs. Used to find the correct host IP to put in Nginx proxy_pass.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>hostname -I</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">TURN Test</div>
+          <div class="cmd-title">Test if TURN Server Port is Reachable</div>
+          <div class="cmd-desc">Checks if the COTURN server on port 3478 is accessible from outside. If this command connects, it means the TURN server is reachable and the EC2 Security Group port 3478 is open correctly.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl -v telnet://18.130.149.212:3478</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 4 — FastAPI Backend
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-backend" id="sec-backend">
+    <div class="section-header">
+      <div class="section-icon">🐍</div>
+      <div>
+        <div class="section-title">Backend — FastAPI (Python)</div>
+        <div class="section-sub">Local dev, EC2 server start, health check, pip install</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Local Dev</div>
+          <div class="cmd-title">Run Backend Locally (Windows) with Auto-reload</div>
+          <div class="cmd-desc">Starts the FastAPI backend server on your Windows machine for local development. The --reload flag automatically restarts the server whenever you save a Python file. Access the Swagger UI at http://localhost:8000/docs.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd D:\call.chourangihealth\2) POC\1)Code\openvidu-fastapi-poc
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Local Dev</div>
+          <div class="cmd-title">Run Backend Locally Without Auto-reload</div>
+          <div class="cmd-desc">Starts the FastAPI backend without auto-reload. Use this if you want a stable local server that doesn't restart on every save. Good for testing a finalized version of the code before deploying to EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>uvicorn app.main:app --host 0.0.0.0 --port 8000</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Backend</div>
+          <div class="cmd-title">Start Backend on EC2 (Stays Running in Background)</div>
+          <div class="cmd-desc">Starts the FastAPI backend on EC2 using nohup so it keeps running even after you close the SSH terminal. Logs are saved to /tmp/backend.log. This is the correct command to use every time you deploy a new version on EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /home/ubuntu/test-1/backend
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Backend</div>
+          <div class="cmd-title">Kill Old Backend and Restart Fresh</div>
+          <div class="cmd-desc">Stops any currently running uvicorn process and immediately starts a new one in the background. Use this every time you pull new backend code on EC2 to apply the latest changes without leaving old processes running.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>pkill -f uvicorn && cd /home/ubuntu/test-1/backend && nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Health Check</div>
+          <div class="cmd-title">Check Backend is Running (Health Endpoint)</div>
+          <div class="cmd-desc">Sends a quick GET request to the backend health endpoint. If the server is running correctly it returns {"status":"ok"}. Always run this after starting or restarting the backend to confirm it is live before testing other endpoints.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl http://localhost:8000/health</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Logs</div>
+          <div class="cmd-title">View Backend Live Logs on EC2</div>
+          <div class="cmd-desc">Reads the backend log file in real-time. Shows all incoming requests, errors, and print statements from your FastAPI code. Very useful for debugging issues when testing on the production domain.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>tail -f /tmp/backend.log</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Edit</div>
+          <div class="cmd-title">Edit Backend main.py (CORS Config)</div>
+          <div class="cmd-desc">Opens the main FastAPI application file for editing. Used mainly to update the CORS allowed_origins list. When moving from local dev to production you need to change the origin from localhost to https://chourangi.duckdns.org.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>nano /home/ubuntu/test-1/backend/app/main.py</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Check</div>
+          <div class="cmd-title">Kill Uvicorn Process Only</div>
+          <div class="cmd-desc">Stops only the uvicorn (FastAPI) process without affecting anything else. Used when you want to stop the backend temporarily or before restarting it with updated code or configuration.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>pkill -f uvicorn</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Test</div>
+          <div class="cmd-title">Test Login API via CURL (Swagger Alternative)</div>
+          <div class="cmd-desc">Sends a POST login request directly from command line to test the auth endpoint. Returns a JWT token if credentials are correct. Use this to quickly test the backend without opening the browser.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl -X 'POST' \
+  'http://192.168.1.62:8000/api/auth/login' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"username": "doctor", "password": "123456"}'</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Test</div>
+          <div class="cmd-title">Test Video Session API via CURL</div>
+          <div class="cmd-desc">Sends a POST request to create a video session using the JWT Bearer token. Replace the token value with the actual token returned from the login endpoint. Returns sessionId and token needed by the frontend.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl -X 'POST' \
+  'http://192.168.1.62:8000/api/video/session' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id": "testing"}'</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Test</div>
+          <div class="cmd-title">Test OpenVidu Connection from Backend</div>
+          <div class="cmd-desc">Hits the test-openvidu endpoint on the backend which internally calls the OpenVidu API to verify the connection. Returns success if FastAPI can reach and authenticate with the OpenVidu server on EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl -X 'GET' \
+  'http://192.168.1.62:8000/test-openvidu' \
+  -H 'accept: application/json'</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Pip Install</div>
+          <div class="cmd-title">Install Python JWT Library</div>
+          <div class="cmd-desc">Installs the Python JWT (PyJWT) library used by the FastAPI backend to generate and verify JWT tokens for authentication. Run this once when setting up the backend on a new machine or EC2 instance.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>pip install pyjwt</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Pip Install</div>
+          <div class="cmd-title">Install All Backend Dependencies from requirements.txt</div>
+          <div class="cmd-desc">Installs all Python packages listed in requirements.txt at once — includes FastAPI, uvicorn, requests, pyjwt, pydantic, and others. Always run this when setting up the backend on EC2 for the first time.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>pip install -r requirements.txt</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Recording</div>
+          <div class="cmd-title">Check Saved Recordings on EC2</div>
+          <div class="cmd-desc">Lists all MP4 recording files that were auto-copied to the record_videos folder after stopping a recording. Each file is named after the recording ID. Confirms the auto-copy recording feature is working correctly.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>ls /home/ubuntu/test-1/record_videos/</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 5 — NPM / Frontend Build
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-npm" id="sec-npm">
+    <div class="section-header">
+      <div class="section-icon">⚛️</div>
+      <div>
+        <div class="section-title">NPM / React Frontend Build</div>
+        <div class="section-sub">Install, build, run local dev server for React frontend</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">NPM Install</div>
+          <div class="cmd-title">Install All Frontend Node Dependencies</div>
+          <div class="cmd-desc">Downloads and installs all React packages listed in package.json into the node_modules folder. Run this once when setting up the frontend project for the first time on any machine including EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>npm install</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">NPM Install</div>
+          <div class="cmd-title">Install JWT Decode Library</div>
+          <div class="cmd-desc">Installs the jwt-decode npm package used in api.js to decode the JWT token returned from the backend login API. This allows the frontend to extract the user's role from the token without calling the server again.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>npm install jwt-decode</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Local Dev</div>
+          <div class="cmd-title">Start React Local Dev Server</div>
+          <div class="cmd-desc">Starts the React development server with hot reload on http://localhost:3000. Any code changes you save will instantly reflect in the browser. Use this for local development and testing before building for production.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>npm start</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Production Build</div>
+          <div class="cmd-title">Build React App for Production (EC2 Deploy)</div>
+          <div class="cmd-desc">Compiles and bundles the React app into a production-ready build in the /build folder. This creates optimized, minified HTML/CSS/JS files. Run this on EC2 every time you update frontend code before copying to custom-layout.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>npm run build</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Frontend</div>
+          <div class="cmd-title">Install npm on EC2 (Node.js)</div>
+          <div class="cmd-desc">Installs Node.js and npm on the EC2 Ubuntu server. Required once when setting up the frontend build environment on EC2. After this you can run npm install and npm run build on the server.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Frontend</div>
+          <div class="cmd-title">Copy React Build to OpenVidu Custom Layout</div>
+          <div class="cmd-desc">Copies all production build files from the /build folder into the OpenVidu custom-layout directory. This is how the React frontend is served by OpenVidu's Nginx. Run this after every npm run build on EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cp -r build/* /opt/openvidu/custom-layout/</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 6 — Nginx Config
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-nginx" id="sec-nginx">
+    <div class="section-header">
+      <div class="section-icon">🌐</div>
+      <div>
+        <div class="section-title">Nginx Configuration</div>
+        <div class="section-sub">Edit, check, and reload Nginx config inside OpenVidu</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Nginx Edit</div>
+          <div class="cmd-title">Edit Custom Frontend Nginx Config</div>
+          <div class="cmd-desc">Opens the custom Nginx locations file where the frontend routing and backend API proxy is configured. This file tells Nginx where to find the React build files and how to forward /api/ requests to the FastAPI backend.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>nano /opt/openvidu/custom-nginx-locations/frontend.conf</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Nginx Config</div>
+          <div class="cmd-title">Correct Nginx Config Content (Final Working Version)</div>
+          <div class="cmd-desc">This is the correct and final Nginx config that serves the React frontend and proxies /api/ calls to FastAPI backend running at 172.17.0.1:8000 (Docker host IP). Paste this content inside frontend.conf and restart OpenVidu.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>location / {
+    root /opt/openvidu/custom-layout;
+    index index.html;
+    try_files $uri $uri/ =404;
+}
+
+location /index.html {
+    root /opt/openvidu/custom-layout;
+}
+
+location /api/ {
+    proxy_pass http://172.17.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+}</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 7 — EC2 Deployment
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-deploy" id="sec-deploy">
+    <div class="section-header">
+      <div class="section-icon">🚀</div>
+      <div>
+        <div class="section-title">EC2 Deployment Workflow</div>
+        <div class="section-sub">Full backend + frontend deploy steps on the server</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Deploy</div>
+          <div class="cmd-title">Full Backend Deployment on EC2 (Step-by-Step)</div>
+          <div class="cmd-desc">Complete set of commands to deploy new backend code on EC2. Go to backend folder, pull latest from GitHub, kill old server, start fresh with nohup, wait 3 seconds, then verify health endpoint returns ok.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /home/ubuntu/test-1/backend
+git fetch origin master
+git reset --hard origin/master
+pkill -f uvicorn
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+sleep 3
+curl http://localhost:8000/health</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Frontend Deploy</div>
+          <div class="cmd-title">Full Frontend Deployment on EC2 (Step-by-Step)</div>
+          <div class="cmd-desc">Complete set of commands to deploy new frontend code on EC2. Pull latest code from GitHub, install any new npm packages, build the production bundle, and copy files to the OpenVidu custom-layout folder so Nginx serves the updated app.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /home/ubuntu/test-1/frontend
+git fetch origin master
+git reset --hard origin/master
+npm install
+npm run build
+cp -r build/* /opt/openvidu/custom-layout/</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Project Setup</div>
+          <div class="cmd-title">Navigate to Backend Folder on EC2</div>
+          <div class="cmd-desc">Changes directory to the FastAPI backend project folder on EC2. This is where all Python code lives and where you run backend commands like git pull, pip install, and uvicorn.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /home/ubuntu/test-1/backend</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Project Setup</div>
+          <div class="cmd-title">Navigate to Frontend Folder on EC2</div>
+          <div class="cmd-desc">Changes directory to the React frontend project folder on EC2. This is where all JavaScript/React code lives and where you run npm commands like npm install, npm run build.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /home/ubuntu/test-1/frontend</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Sleep+Check</div>
+          <div class="cmd-title">Wait 3 Seconds Then Check Health</div>
+          <div class="cmd-desc">After starting the backend with nohup, wait 3 seconds for uvicorn to fully initialize before running the health check. This ensures the server has time to start up and is actually ready to accept requests.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>sleep 3
+curl http://localhost:8000/health</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 8 — GitHub Push / Pull
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-github" id="sec-github">
+    <div class="section-header">
+      <div class="section-icon">🐙</div>
+      <div>
+        <div class="section-title">GitHub — Push, Pull &amp; Commit</div>
+        <div class="section-sub">All git commands used during development and deployment</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Backend Push</div>
+          <div class="cmd-title">Push Backend Code Changes to GitHub</div>
+          <div class="cmd-desc">Standard Git workflow to push backend code from your Windows machine to GitHub. Add all changed files, write a commit message describing what changed, then push to the master branch. Always do this before deploying to EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd D:\call.chourangihealth\2) POC\1)Code\openvidu-fastapi-poc
+git add .
+git commit -m "your commit message here"
+git push origin master</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Frontend Push</div>
+          <div class="cmd-title">Push Frontend Code Changes to GitHub</div>
+          <div class="cmd-desc">Standard Git workflow to push frontend React code from your Windows machine to GitHub. Go to the frontend project folder, add all changes, write a descriptive commit, and push to master. Do this before deploying frontend to EC2.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd D:\call.chourangihealth\2) POC\1)Code\openvidu-frontend-poc
+git add .
+git commit -m "your commit message here"
+git push origin master</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Git Pull</div>
+          <div class="cmd-title">Pull Latest Backend Code on EC2 (Hard Reset)</div>
+          <div class="cmd-desc">Fetches the latest changes from GitHub and force-resets the local code to exactly match the remote master branch. The --hard reset discards any local EC2 modifications. Use this every time you deploy a new backend version.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>git fetch origin master
+git reset --hard origin/master</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Commit Examples</div>
+          <div class="cmd-title">Commit — Feature: Auto Copy Recording</div>
+          <div class="cmd-desc">Used when adding the auto-copy recording feature that copies MP4 files from /opt/openvidu/recordings/ to /home/ubuntu/test-1/record_videos/ when stop recording is triggered from the frontend.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>git add .
+git commit -m "feat: auto copy recording to record_videos folder on stop"
+git push origin master</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Commit Examples</div>
+          <div class="cmd-title">Commit — Docs: Update Backend Documentation</div>
+          <div class="cmd-desc">Used when updating documentation files (.md, .pdf, .docx) inside the backend repo. Note: documentation-only commits do NOT require a git pull on EC2 since they don't affect running Python code.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>git add .
+git commit -m "docs: update backend documentation with auto recording copy feature"
+git push origin master</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Commit Examples</div>
+          <div class="cmd-title">Commit — Docs: Update Frontend Documentation</div>
+          <div class="cmd-desc">Used when updating documentation files inside the frontend repository. Like backend docs, these changes don't require any frontend rebuild or EC2 pull since they are just reference documentation files.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd D:\call.chourangihealth\2) POC\1)Code\openvidu-frontend-poc
+git add .
+git commit -m "docs: update frontend documentation with recording feature"
+git push origin master</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 9 — Debug & Logs
+       ═══════════════════════════════════════════════ -->
+  <div class="section cat-debug" id="sec-debug">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div>
+        <div class="section-title">Debug, Logs &amp; Troubleshooting</div>
+        <div class="section-sub">Check container logs, inspect config, diagnose issues</div>
+      </div>
+    </div>
+
+    <div class="cmd-grid">
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Nginx Logs</div>
+          <div class="cmd-title">View Last 30 Nginx Container Logs</div>
+          <div class="cmd-desc">Shows the last 30 lines of the OpenVidu Nginx (proxy) container logs. Used to diagnose 500 errors, redirect loops, upstream not found errors, and SSL/certificate warnings when the site fails to load.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker logs openvidu-nginx-1 --tail 30</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Nginx Logs</div>
+          <div class="cmd-title">View Last 20 Nginx Logs</div>
+          <div class="cmd-desc">Shows the last 20 log lines from the Nginx container. Use this for quick checks after a restart to see if Nginx started successfully or is throwing errors like "host not found in upstream" or rewrite cycle issues.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker logs openvidu-nginx-1 --tail 20</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">COTURN Logs</div>
+          <div class="cmd-title">View Last 30 COTURN Container Logs</div>
+          <div class="cmd-desc">Shows the last 30 log lines from the COTURN TURN server container. Used to debug ICE connection issues and check if the TURN server is correctly receiving and forwarding media traffic from clients on different networks.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker logs openvidu-coturn-1 --tail 30</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">COTURN Logs</div>
+          <div class="cmd-title">View Last 10 COTURN Logs</div>
+          <div class="cmd-desc">Quick check of COTURN logs. Look for lines showing "external-ip" to confirm external IP mapping is applied, or "stale session state" which means the TURN server is connecting but media is not flowing through correctly.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker logs openvidu-coturn-1 --tail 10</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">COTURN Logs</div>
+          <div class="cmd-title">View Last 20 COTURN Logs</div>
+          <div class="cmd-desc">Medium-length COTURN log check. Useful after applying COTURN_EXTERNAL_IP or --external-ip changes to verify if sessions are now establishing properly and media packets are being forwarded correctly between participants.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>docker logs openvidu-coturn-1 --tail 20</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Docker Restart</div>
+          <div class="cmd-title">Force Restart OpenVidu (Useful After Config Change)</div>
+          <div class="cmd-desc">Stops and restarts the entire OpenVidu stack using the openvidu shell script. After any change to .env, docker-compose.yml, or nginx config files, this command applies all changes. Always wait 2 minutes before testing after restart.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /opt/openvidu && ./openvidu restart</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Restart Backend</div>
+          <div class="cmd-title">Restart Backend Without Ctrl+C (Safe Method)</div>
+          <div class="cmd-desc">The fully safe way to restart the FastAPI backend on EC2 without using Ctrl+C. It kills the existing process, starts a fresh one with nohup, waits 3 seconds, and verifies the health endpoint — all in one clean command chain.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>pkill -f uvicorn
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+sleep 3
+curl http://localhost:8000/health</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Local Dev Restart</div>
+          <div class="cmd-title">Stop React Dev Server (Keyboard Shortcut)</div>
+          <div class="cmd-desc">Pressing Ctrl+C in the terminal where npm start is running will stop the React development server. After stopping, you can run npm start again to restart with latest code changes applied.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>CTRL + C</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Browser</div>
+          <div class="cmd-title">Hard Refresh Browser to Clear Cache</div>
+          <div class="cmd-desc">Forces the browser to reload the page and clear cached JavaScript/CSS files. Use this after deploying new frontend code to make sure the browser loads the latest version and not old cached files.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>CTRL + SHIFT + R  (Windows / Linux)
+CMD + SHIFT + R   (Mac)</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">EC2 Navigate</div>
+          <div class="cmd-title">Go to OpenVidu Installation Folder</div>
+          <div class="cmd-desc">Changes directory to the OpenVidu installation root on EC2. This is where the openvidu start/stop/restart scripts, .env config, docker-compose.yml, custom-layout, and coturn config files are all located.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>cd /opt/openvidu</pre>
+        </div>
+      </div>
+
+      <div class="cmd-card">
+        <div class="cmd-card-top">
+          <div class="cmd-label">Check Recordings</div>
+          <div class="cmd-title">List Raw Recordings Stored by OpenVidu</div>
+          <div class="cmd-desc">Shows all recordings stored in the OpenVidu recordings directory. Each session's recordings appear in their own subfolder named by recording ID. This is where OpenVidu initially saves MP4 files before they are auto-copied.</div>
+        </div>
+        <div class="cmd-code-area">
+          <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+          <pre>ls /opt/openvidu/recordings/</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer note -->
+  <div style="text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid var(--border);">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted)">
+      // OpenVidu Project Commands Reference — ChourangiHealth Video Consultation Platform //<br>
+      Tech Stack: OpenVidu v2.32 · FastAPI (Python) · React.js · AWS EC2 · DuckDNS · Let's Encrypt SSL
+    </p>
+  </div>
+
+</div><!-- .content -->
+
+<script>
+function copyCmd(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'copy';
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>
