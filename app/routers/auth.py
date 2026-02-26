@@ -16,3 +16,11 @@ def login(request: LoginRequest):
     })
 
     return LoginResponse(access_token=access_token, role=user["role"])
+
+@router.post("/token-from-role")
+def token_from_role(role: str, name: str):
+    if role not in ["doctor", "patient"]:
+        raise HTTPException(status_code=400, detail="Invalid role. Use doctor or patient")
+    jwt_role = "admin" if role == "doctor" else "user"
+    token = AuthService.create_access_token({"sub": name, "role": jwt_role})
+    return {"access_token": token, "token_type": "bearer"}
